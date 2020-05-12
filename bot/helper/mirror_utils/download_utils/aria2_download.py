@@ -33,7 +33,7 @@ class AriaDownloadHelper(DownloadHelper):
                         download_dict[self.__listener.uid] = AriaDownloadStatus(self, self.__listener)
                         if download.is_torrent:
                             download_dict[self.__listener.uid].is_torrent = True
-                        update_all_messages()
+                    update_all_messages()
                     LOGGER.info(f'Changed gid from {gid} to {self.gid}')
                 else:
                     self.__listener.onDownloadComplete()
@@ -73,7 +73,7 @@ class AriaDownloadHelper(DownloadHelper):
         with self._resource_lock:
             self.gid = download.gid
         with download_dict_lock:
-            download_dict[self._listener.uid] = AriaDownloadStatus(self.gid, self._listener)
+            download_dict[self.__listener.uid] = AriaDownloadStatus(self, self.__listener)
             LOGGER.info(f"Started: {self.gid} DIR:{download.dir} ")
 
     def add_download(self, link: str, path, listener):
