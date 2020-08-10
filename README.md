@@ -2,7 +2,7 @@
 This is a telegram bot writen in python for mirroring files on the internet to our beloved Google Drive.
 
 # Inspiration 
-This project is heavily inspired from @out386 's telegram bot which is written in JS.
+This project is heavily inspired from [@out386](https://github.com/out386) [telegram bot](https://github.com/out386/aria-telegram-mirror-bot) which is written in TypeScript.
 
 # Features supported:
 - Mirroring direct download links to google drive
@@ -94,46 +94,45 @@ where host is the name of extractor (eg. youtube, twitch). Multiple accounts of 
 
 ## Deploying on Heroku
 - Login into your heroku account with command and follow on screen instructions:
-- ```
-- curl https://cli-assets.heroku.com/install-ubuntu.sh | sh
+```
 heroku login
 ```
 - Create a new heroku app:
-- ```
-- heroku create appname	
-- ```
-- - Select This App in your Heroku-cli:
+```
+heroku create appname	
+```
+- Select This App in your Heroku-cli:
 ```
 heroku git:remote -a appname
 ```
 - Change Dyno Stack to a Docker Container:
-- ```
-- heroku stack:set container
-- ```
-- - Add Private Credentials and Config Stuff:
+```
+heroku stack:set container
+```
+- Add Private Credentials and Config Stuff:
 ```
 git add -f credentials.json token.pickle config.env
 ```
 - Commit new changes:
-- ```
-- git commit -m "Added Creds."
-- ```
-- - Push Code to Heroku:
+```
+git commit -m "Added Creds."
+```
+- Push Code to Heroku:
 ```
 git push heroku master --force
 ```
 - Restart Worker by these commands:
-- ```
-- heroku ps:scale worker=0
-- ```
-- ```
-- heroku ps:scale worker=1	 	
-- ```
+```
+heroku ps:scale worker=0
+```
+```
+heroku ps:scale worker=1	 	
+```
 - Heroku-Note: Doing authorizations ( /authorize command ) through telegram wont be permanent as heroku uses ephemeral filesystem. They will be reset on each dyno boot. As a workaround you can:
-- - Make a file authorized_chats.txt and write the user names and chat_id of you want to authorize, each separated by new line
+- Make a file authorized_chats.txt and write the user names and chat_id of you want to authorize, each separated by new line
 - Then force add authorized_chats.txt to git and push it to heroku
-- ```
-- git add authorized_chats.txt -f
+```
+git add authorized_chats.txt -f
 git commit -asm "Added hardcoded authorized_chats.txt"
 
 git push heroku master
