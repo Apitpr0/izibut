@@ -34,7 +34,7 @@ def stats(update, context):
     mu = get_size(svmem.used)
     mp = svmem.percent
     # CPU
-    cpufreq = psutil.cpu_freq().current
+    cpufreq = psutil.cpu_freq()
     cpuUsage = psutil.cpu_percent()
     stats = f"<b>⏱️Bot Uptime:</b> <code>{currentTime}</code>" \
             f"\n\n<b>🗄️Disk Usage🗄️</b>" \
@@ -45,7 +45,7 @@ def stats(update, context):
             f"\n<code>Upload  : {up}</code>" \
             f"\n<code>Download: {down}</code>" \
             f"\n\n<b>💾Memory Usage💾</b>" \
-            f"\n<code>CPU     : {cpufreq}Mhz ({cpuUsage}%)</code>" \
+            f"\n<code>CPU     : {cpufreq.current:.2f}Mhz ({cpuUsage}%)</code>" \
             f"\n<code>Total   : {mt}</code>" \
             f"\n<code>Free    : {ma}</code>" \
             f"\n<code>Used    : {mu} ({mp}%)</code>"

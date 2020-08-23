@@ -113,14 +113,14 @@ def get_readable_message():
                            f"\n<b>🙂Peers:</b> <code>{download.aria_download().connections}</code>"
                 msg += f"\n<b>🌚GID:</b> <code>{download.gid()}</code>"
             # CPU
-            cpufreq = psutil.cpu_freq().current
+            cpufreq = psutil.cpu_freq()
             cpuUsage = psutil.cpu_percent()
             # RAM
             svmem = psutil.virtual_memory()
             mu = get_size(svmem.used)
             mp = svmem.percent
             msg += f"\n\n<b>📊Usage📊</b>" \
-                   f"\n<b>😯CPU:</b> <code>{cpufreq}Mhz ({cpuUsage}%)</code>" \
+                   f"\n<b>😯CPU:</b> <code>{cpufreq.current:.2f}Mhz ({cpuUsage}%)</code>" \
                    f"\n<b>😋RAM:</b> <code>{mu} ({mp}%)</code>"
         return msg
 
