@@ -93,7 +93,6 @@ class GoogleDriveHelper:
                                      resumable=False)
         file_metadata = {
             'name': file_name,
-            'description': 'mirror',
             'mimeType': mime_type,
         }
         if parent_id is not None:
@@ -128,7 +127,6 @@ class GoogleDriveHelper:
         # File body description
         file_metadata = {
             'name': file_name,
-            'description': 'mirror',
             'mimeType': mime_type,
         }
         if parent_id is not None:
