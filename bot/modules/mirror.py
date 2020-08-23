@@ -118,7 +118,13 @@ class MirrorListener(listeners.MirrorListeners):
                     share_url += '/'
                 msg += f'\n\n Shareable link: <a href="{share_url}">here</a>'
             if self.tag is not None:
-                msg += f'\ncc: @{self.tag}'
+                msg += f'\n cc: @{self.tag}'
+            else:
+                if self.message.from_user.username:
+                    uname = f"@{self.message.from_user.username}"
+                else:
+                    uname = f'<a href="tg://user?id={self.message.from_user.id}">{self.message.from_user.first_name}</a>'
+                msg += f'\n cc: {uname}'
             try:
                 fs_utils.clean_download(download_dict[self.uid].path())
             except FileNotFoundError:
