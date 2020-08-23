@@ -58,6 +58,14 @@ def get_readable_file_size(size_in_bytes) -> str:
         return 'File too large'
 
 
+def get_size(bytes, suffix="B"):
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
+
+
 def getDownloadByGid(gid):
     with download_dict_lock:
         for dl in download_dict.values():

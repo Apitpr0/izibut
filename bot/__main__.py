@@ -1,16 +1,17 @@
-import shutil
+import shutil, psutil
 import signal
 import pickle
 
 from os import execl, path, remove
 from sys import executable
+import time
 
 from telegram.ext import CommandHandler, run_async
 from bot import dispatcher, updater, botStartTime
 from bot.helper.ext_utils import fs_utils
 from bot.helper.telegram_helper.bot_commands import BotCommands
 from bot.helper.telegram_helper.message_utils import *
-from .helper.ext_utils.bot_utils import get_readable_file_size, get_readable_time
+from .helper.ext_utils.bot_utils import get_readable_file_size, get_size, get_readable_time
 from .helper.telegram_helper.filters import CustomFilters
 from .modules import authorize, list, cancel_mirror, mirror_status, mirror, clone, watch
 
@@ -18,14 +19,36 @@ from .modules import authorize, list, cancel_mirror, mirror_status, mirror, clon
 @run_async
 def stats(update, context):
     currentTime = get_readable_time((time.time() - botStartTime))
+    # Disk
     total, used, free = shutil.disk_usage('.')
     total = get_readable_file_size(total)
     used = get_readable_file_size(used)
     free = get_readable_file_size(free)
-    stats = f'Bot Uptime: {currentTime}\n' \
-            f'Total disk space: {total}\n' \
-            f'Used: {used}\n' \
-            f'Free: {free}'
+    # Network
+    up = get_readable_file_size(psutil.net_io_counters().bytes_sent)
+    down = get_readable_file_size(psutil.net_io_counters().bytes_recv)
+    # Ram Usage
+    svmem = psutil.virtual_memory()
+    mt = get_size(svmem.total)
+    ma = get_size(svmem.available)
+    mu = get_size(svmem.used)
+    mp = svmem.percent
+    # CPU
+    cpufreq = psutil.cpu_freq().current
+    cpuUsage = psutil.cpu_percent()
+    stats = f"<b>⏱️Bot Uptime:</b> <code>{currentTime}</code>" \
+            f"\n\n<b>🗄️Disk Usage🗄️</b>" \
+            f"\n<code>Total   : {total}</code>" \
+            f"\n<code>Free    : {free}</code>" \
+            f"\n<code>Used    : {used}</code>" \
+            f"\n\n<b>📊Bandwidth Usage📊</b>" \
+            f"\n<code>Upload  : {up}</code>" \
+            f"\n<code>Download: {down}</code>" \
+            f"\n\n<b>💾Memory Usage💾</b>" \
+            f"\n<code>CPU     : {cpufreq}Mhz ({cpuUsage}%)</code>" \
+            f"\n<code>Total   : {mt}</code>" \
+            f"\n<code>Free    : {ma}</code>" \
+            f"\n<code>Used    : {mu} ({mp}%)</code>"
     sendMessage(stats, context.bot, update)
 
 
