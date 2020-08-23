@@ -1,3 +1,4 @@
+import psutil
 import logging
 import re
 import threading
@@ -13,16 +14,16 @@ URL_REGEX = r"(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+"
 
 
 class MirrorStatus:
-    STATUS_UPLOADING = "Uploading"
-    STATUS_DOWNLOADING = "Downloading"
-    STATUS_WAITING = "Queued"
-    STATUS_FAILED = "Failed. Cleaning download"
-    STATUS_CANCELLED = "Cancelled"
-    STATUS_ARCHIVING = "Archiving"
+    STATUS_UPLOADING = "Uploading...📤"
+    STATUS_DOWNLOADING = "Downloading...📥"
+    STATUS_WAITING = "Queued⛓️"
+    STATUS_FAILED = "Failed. Cleaning download😢"
+    STATUS_CANCELLED = "Cancelled❌"
+    STATUS_ARCHIVING = "Archiving📩"
 
 
 PROGRESS_MAX_SIZE = 100 // 8
-PROGRESS_INCOMPLETE = ['▏', '▎', '▍', '▌', '▋', '▊', '▉']
+PROGRESS_INCOMPLETE = ['▣', '▣', '▣', '▣', '▣', '▣', '▣']
 
 SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
 
@@ -85,10 +86,10 @@ def get_progress_bar_string(status):
     p = min(max(p, 0), 100)
     cFull = p // 8
     cPart = p % 8 - 1
-    p_str = '█' * cFull
+    p_str = '▣' * cFull
     if cPart >= 0:
         p_str += PROGRESS_INCOMPLETE[cPart]
-    p_str += ' ' * (PROGRESS_MAX_SIZE - cFull)
+    p_str += '▢' * (PROGRESS_MAX_SIZE - cFull)
     p_str = f"[{p_str}]"
     return p_str
 
@@ -97,18 +98,28 @@ def get_readable_message():
     with download_dict_lock:
         msg = ""
         for download in list(download_dict.values()):
-            msg += f"<i>{download.name()}</i> - "
-            msg += download.status()
+            msg += f"<b>📇Filename:</b> <code>{download.name()}</code>" \
+                   f"\n<b>📊Status:</b> <i>{download.status()}</i>"
             if download.status() != MirrorStatus.STATUS_ARCHIVING:
-                msg += f"\n<code>{get_progress_bar_string(download)} {download.progress()}</code> of " \
-                       f"{download.size()}" \
-                       f" at {download.speed()}, ETA: {download.eta()} "
+                msg += f"\n<code>{get_progress_bar_string(download)} {download.progress()}</code>" \
+                       f"\n💾<b>Total Size:</b> <code>{download.size()}</code>" \
+                       f"\n💨<b>Speed:</b> <code>{download.speed()}</code>" \
+                       f"\n⏳<b>ETA:</b> <code>{download.eta()}</code>"
             if download.status() == MirrorStatus.STATUS_DOWNLOADING:
                 if hasattr(download, 'is_torrent'):
-                    msg += f"| P: {download.aria_download().connections} " \
-                           f"| S: {download.aria_download().num_seeders}"
-                msg += f"\nGID: <code>{download.gid()}</code>"
-            msg += "\n\n"
+                    msg += f"\n<b>🌱Seeders:</b> <code>{download.aria_download().num_seeders}</code>" \
+                           f"\n<b>🙂Peers:</b> <code>{download.aria_download().connections}</code>"
+                msg += f"\n<b>🌚GID:</b> <code>{download.gid()}</code>"
+            # CPU
+            cpufreq = psutil.cpu_freq().current
+            cpuUsage = psutil.cpu_percent()
+            # RAM
+            svmem = psutil.virtual_memory()
+            mu = get_size(svmem.used)
+            mp = svmem.percent
+            msg += f"\n\n<b>📊Usage📊</b>" \
+                   f"\n<b>😯CPU:</b> <code>{cpufreq}Mhz ({cpuUsage}%)</code>" \
+                   f"\n<b>😋RAM:</b> <code>{mu} ({mp}%)</code>"
         return msg
 
 
