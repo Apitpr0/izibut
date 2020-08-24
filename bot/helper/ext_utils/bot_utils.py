@@ -20,7 +20,7 @@ class MirrorStatus:
     STATUS_FAILED = "Failed. Cleaning download😢"
     STATUS_CANCELLED = "Cancelled❌"
     STATUS_ARCHIVING = "Archiving📩"
-
+    STATUS_EXTRACTING = "Extracting🤐"
 
 PROGRESS_MAX_SIZE = 100 // 8
 PROGRESS_INCOMPLETE = ['▣', '▣', '▣', '▣', '▣', '▣', '▣']
@@ -70,7 +70,9 @@ def get_size(bytes, suffix="B"):
 def getDownloadByGid(gid):
     with download_dict_lock:
         for dl in download_dict.values():
-            if dl.status() != MirrorStatus.STATUS_UPLOADING and dl.status() != MirrorStatus.STATUS_ARCHIVING:
+            status = dl.status()
+            if status != MirrorStatus.STATUS_UPLOADING and status != MirrorStatus.STATUS_ARCHIVING\
+                    and status != MirrorStatus.STATUS_EXTRACTING:
                 if dl.gid() == gid:
                     return dl
     return None
@@ -100,8 +102,8 @@ def get_readable_message():
         for download in list(download_dict.values()):
             msg += f"<b>📇Filename:</b> <code>{download.name()}</code>" \
                    f"\n<b>📊Status:</b> <i>{download.status()}</i>"
-            if download.status() != MirrorStatus.STATUS_ARCHIVING:
-                msg += f"\n<code>{get_progress_bar_string(download)} {download.progress()}</code>" \
+            if download.status() != MirrorStatus.STATUS_ARCHIVING and download.status() != MirrorStatus.STATUS_EXTRACTING:
+                msg += f"\n{get_progress_bar_string(download)} {download.progress()}" \
                        f"\n💾<b>Total Size:</b> <code>{download.size()}</code>" \
                        f"\n💨<b>Speed:</b> <code>{download.speed()}</code>" \
                        f"\n⏳<b>ETA:</b> <code>{download.eta()}</code>"
@@ -154,6 +156,7 @@ def is_magnet(url: str):
     if magnet:
         return True
     return False
+
 
 def new_thread(fn):
     """To use as decorator to make a function call threaded.
