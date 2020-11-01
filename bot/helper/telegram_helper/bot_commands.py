@@ -15,8 +15,8 @@ class _BotCommands:
         self.StatsCommand = 'statslu'
         self.HelpCommand = 'helplu'
         self.LogCommand = 'loglu'
-        self.CloneCommand = "clonebob"
+        self.CloneCommand = 'clonebob'
         self.WatchCommand = 'watchbob'
         self.TarWatchCommand = 'tarwatchbob'
-    BotCommands = _BotCommands()
+ BotCommands = _BotCommands()
 
